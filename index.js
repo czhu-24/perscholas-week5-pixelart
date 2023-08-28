@@ -1,36 +1,98 @@
-let color = "red";
+let currentColor = "black";
+let backgroundColor = "white"; // color used to simulate "erasing"
+let currentMode = "pen";
+let toolSize = 10;
 
-const allSquares = document.querySelectorAll("canvas");
-const colorpicker = document.getElementById("color-picker");
-const pen = document.getElementById("pen-square");
-const eraser = document.getElementById("eraser-square");
+let isMoving = false; // boolean to handle tracking movement of mouse during 
+// drawing & erasing
 
-const drawSquare = (i) => {
-    const ctx = allSquares[i].getContext("2d");
-    ctx.fillStyle = color;
-    // Draw the rectangle to cover whole canvas
-    ctx.fillRect(0, 0, 100, 100);
+const canvas = document.querySelector("canvas");
+const colorPicker = document.getElementById("color-picker");
+const penPicker = document.getElementById("pen-square");
+const eraserPicker = document.getElementById("eraser-square");
+
+const resetPicker = document.getElementById("reset-square");
+
+const ctx = canvas.getContext("2d");
+const rect = canvas.getBoundingClientRect(); // Get canvas's position on the page
+
+
+
+const canvasMousedown = (e) => {
+    isMoving = true;
+    const x = e.clientX - rect.left; // Cursor's x-coordinate relative to the canvas
+    const y = e.clientY - rect.top; // Cursor's y-coordinate relative to the canvas
+
+    ctx.lineWidth = toolSize;
+
+    switch(currentMode){
+        case("pen"):
+            ctx.strokeStyle = currentColor;
+            break;
+        case("eraser"):
+            ctx.fillStyle = backgroundColor;
+            break;
+    }
+    ctx.beginPath();
+    ctx.moveTo(x,y);
+
+    
 }
 
-// for each square, add an event listener to it
-for(let i = 0; i < allSquares.length; i++){
-    // apparently, the default sizing for a Canvas' coordinate system is 150 px wide & 300 px height... which stretches stuff out
-    // oh & the width & height attributes of the DOM element controls the size of the coordinate system
-    allSquares[i].width = 100;
-    allSquares[i].height = 100;
-    allSquares[i].addEventListener("click", (e) => {
-        const ctx = allSquares[i].getContext("2d");
-        ctx.fillStyle = color;
+const canvasMousemove = (e) => {
+    if(!isMoving){
+        return;
+    }
+    const x = e.clientX - rect.left; // Cursor's x-coordinate relative to the canvas
+    const y = e.clientY - rect.top; // Cursor's y-coordinate relative to the canvas
 
-        // Draw the black rectangle to cover whole canvas
-        ctx.fillRect(0, 0, 100, 100);
-    })
-}
+    switch(currentMode){
+        case("pen"):
+            ctx.lineTo(x, y);
+            break;
+        case("eraser"):
+            ctx.fillRect(x, y, toolSize, toolSize);
+            break;
+    }
+    canvas.addEventListener("mouseup", (e) => canvasMouseup(e));
+};
 
-colorpicker.addEventListener("input", (e) => {
+const canvasMouseup = (e) => {
+    const x = e.clientX - rect.left; // Cursor's x-coordinate relative to the canvas
+    const y = e.clientY - rect.top; // Cursor's y-coordinate relative to the canvas
+
+    switch(currentMode){
+        case("pen"):
+            ctx.stroke();
+            break;
+        case("eraser"):
+            break;
+    }
+    isMoving = false;
+};
+
+
+colorPicker.addEventListener("input", (e) => {
     console.log(e.target.value);
-    color = e.target.value;
+    currentColor = e.target.value;
 });
 
-pen.addEventListener("click", )
+canvas.addEventListener("mousedown", canvasMousedown);
+canvas.addEventListener("mousemove", canvasMousemove);
+canvas.addEventListener("mouseup", canvasMouseup);
+
+
+penPicker.addEventListener("click", () => {
+    currentMode = "pen";
+});
+
+eraserPicker.addEventListener("click", () => {
+    currentMode = "eraser";
+});
+
+resetPicker.addEventListener("click", () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
+
+
 

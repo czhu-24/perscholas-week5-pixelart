@@ -23,19 +23,13 @@ h1 {
     flex-direction: column;
 }
 
-#canvas-grid{
-    display: grid;
-    grid-template-columns: repeat(8, 100px);
-    grid-template-rows: repeat(8, 100px);
-    justify-content: center;
-    align-content: center;
-    gap: 0;
+#canvas{
     border: 1px black solid;
-    padding: 0;
-    margin: 0;
+    height: 400px;
+    width: 800px;
 }
 
-#canvas-grid > .grid-square, .save-square, .tool-square {
+.save-square, .tool-square {
     height: 100px;
     width: 100px;
     border: 1px solid black;

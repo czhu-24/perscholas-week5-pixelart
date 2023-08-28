@@ -1,3 +1,8 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+
 h1 {
     color: red;
     text-align: center;
@@ -26,6 +31,8 @@ h1 {
     align-content: center;
     gap: 0;
     border: 1px black solid;
+    padding: 0;
+    margin: 0;
 }
 
 #canvas-grid > .grid-square, .save-square, .tool-square {

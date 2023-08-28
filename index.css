@@ -1,0 +1,35 @@
+h1 {
+    color: red;
+    text-align: center;
+}
+
+#big-flexbox {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+#tool-flexbox {
+    display: flex;
+    flex-direction: column;
+}
+
+#save-flexbox {
+    display: flex;
+    flex-direction: column;
+}
+
+#canvas-grid{
+    display: grid;
+    grid-template-columns: repeat(8, 100px);
+    grid-template-rows: repeat(8, 100px);
+    justify-content: center;
+    align-content: center;
+    gap: 0;
+    border: 1px black solid;
+}
+
+#canvas-grid > .grid-square, .save-square, .tool-square {
+    height: 100px;
+    width: 100px;
+    border: 1px solid black;
+}

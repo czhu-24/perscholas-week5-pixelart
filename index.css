@@ -29,8 +29,24 @@ h1 {
     width: 800px;
 }
 
-.save-square, .tool-square {
+.save-square-flexbox, .tool-square-flexbox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: 100px;
     width: 100px;
     border: 1px solid black;
+}
+
+.tool-square-flexbox > img, .save-square-flexbox > img {
+    height: 70%; /* make it responsive relative to its parent, the .tool-square-flexbox*/
+    width: auto;
+}
+
+h3 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 10px;
 }

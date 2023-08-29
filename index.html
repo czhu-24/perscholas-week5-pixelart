@@ -10,25 +10,27 @@
 <body>
 
     <h1>Pixel Art Editor</h1>
+    <h3 id="current-tool">pencil</h3>
     <div id="big-flexbox">
         <div id="tool-flexbox">
-            <div class="tool-square" id="pen-square">pen</div>
-            <div class="tool-square" id="eraser-square">eraser</div>
-            <div class="tool-square">change color
+            <div class="tool-square-flexbox" id="pencil-square"><img src="images/pencil.png" alt="pencil icon"></div>
+            <div class="tool-square-flexbox" id="eraser-square"><img src="images/eraser.png" alt="eraser icon"></div>
+            <div class="tool-square-flexbox">change color
                 <form>
                     <input id="color-picker" type="color">
                 </form>
             </div>
-            <div class="tool-square">(add shapes)</div>
+            <div class="tool-square-flexbox" id="rectangle-square"><img src="images/rectangle.png" alt="rectangle icon"></div>
+            <div class="tool-square-flexbox"><img src="images/ellipse.png" alt="ellipse icon"></div>
         </div>
         <div id="canvas-grid">
             <canvas id="canvas" width="800" height="400"></canvas>
         </div>
         <div id="save-flexbox">
-            <div class="save-square" id="reset-square">reset</div>
-            <div class="save-square">undo</div>
-            <div class="save-square">redo</div>
-            <div class="save-square">export</div>
+            <div class="save-square-flexbox" id="reset-square">reset</div>
+            <div class="save-square-flexbox"><img src="images/undo.png" alt="undo image"></div>
+            <div class="save-square-flexbox"><img src="images/redo.png" alt="redo image"></div>
+            <div class="save-square-flexbox"><img src="images/export.png" alt="export image"></div>
         </div>
     </div>
     

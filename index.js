@@ -3,6 +3,8 @@ let backgroundColor = "white"; // color used to simulate "erasing"
 let currentMode = "pencil";
 let toolSize = 1;
 
+let isShiftHeldDown = false;
+
 let initialX = 0; // variables to store initial mouse click for calculating rect & circles
 let initialY = 0;
 
@@ -17,6 +19,7 @@ const pencilPicker = document.getElementById("pencil-square");
 const eraserPicker = document.getElementById("eraser-square");
 const rectanglePicker = document.getElementById("rectangle-square");
 const ellipsePicker = document.getElementById("ellipse-square");
+const bucketPicker = document.getElementById("bucket-square");
 const resetPicker = document.getElementById("reset-square");
 
 // text
@@ -38,15 +41,11 @@ canvas.width = canvas.clientWidth * scaleFactor;
 canvas.height = canvas.clientHeight * scaleFactor;
 ctx.scale(scaleFactor, scaleFactor);
 
-
-
-
-
 const canvasMousedown = (e) => {
     isMoving = true;
 
     const x = e.clientX - rect.left; // Cursor's x-coordinate relative to the canvas, takes into account the wiewport (that's e.clientX) as well
-    // so (0,0) would be top left of canvas. the clientX is like (x # pixels right of origin) & rect.left is the same # of pixels right on the page...
+    // so (0,0) would be top left of canvas. the clientX is like (x # pixels right of origin) & rect.left is the same # of pixels right on the page... x & y are positive
     const y = e.clientY - rect.top; // Cursor's y-coordinate relative to the canvas
 
     initialX = e.clientX - rect.left; // need to calculate the initial click location on canvas coordinate
@@ -85,7 +84,12 @@ const canvasMousemove = (e) => {
     //const width = currentX - initialX;
     //const height = currentY - initialY;
 
-    
+    // for the rectangle & ellipse tools
+    if(e.shiftKey){
+        isShiftHeldDown = true;
+    }else{
+        isShiftHeldDown = false;
+    }
 
     switch(currentMode){
         case("pencil"):
@@ -120,10 +124,18 @@ const canvasMouseup = (e) => {
             ctx.stroke();
             break;
         case("rectangle"):
-            ctx.strokeRect(initialX, initialY, width, height);
+            if(isShiftHeldDown){
+                ctx.strokeRect(initialX, initialY, (width+height)/2, (width+height)/2);
+            }else{
+                ctx.strokeRect(initialX, initialY, width, height);
+            }
             break;
         case("ellipse"):
-            ctx.ellipse(initialX + radiusX, initialY + radiusY, radiusX, radiusY, 0, 0, 2 * Math.PI, true);
+            if(isShiftHeldDown){
+                ctx.arc(initialX + radiusX, initialY + radiusY, radiusX, 0, 2 * Math.PI, false);
+            }else{
+                ctx.ellipse(initialX + radiusX, initialY + radiusY, radiusX, radiusY, 0, 0, 2 * Math.PI, true);
+            }
             ctx.stroke();
         case("eraser"):
             break;
@@ -163,6 +175,11 @@ rectanglePicker.addEventListener("click", (e) => {
 
 ellipsePicker.addEventListener("click", (e) => {
     currentMode = "ellipse";
+    currentToolText.textContent = currentMode; // TO REMOVE
+});
+
+bucketPicker.addEventListener("click", (e) => {
+    currentMode = "bucket";
     currentToolText.textContent = currentMode; // TO REMOVE
 });
 

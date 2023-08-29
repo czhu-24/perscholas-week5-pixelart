@@ -31,16 +31,21 @@ h1 {
 
 .save-square-flexbox, .tool-square-flexbox {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100px;
-    width: 100px;
+    height: 70px;
+    width: 70px;
     border: 1px solid black;
 }
 
 .tool-square-flexbox > img, .save-square-flexbox > img {
     height: 70%; /* make it responsive relative to its parent, the .tool-square-flexbox*/
     width: auto;
+}
+
+#toolsize-square > input {
+    width: 90%;
 }
 
 h3 {

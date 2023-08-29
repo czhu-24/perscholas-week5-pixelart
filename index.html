@@ -13,15 +13,19 @@
     <h3 id="current-tool">pencil</h3>
     <div id="big-flexbox">
         <div id="tool-flexbox">
+            <div class="tool-square-flexbox" id="toolsize-square">
+                <input type="range" min="1" max="20" value="1">
+                <span>1</span>
+            </div>
             <div class="tool-square-flexbox" id="pencil-square"><img src="images/pencil.png" alt="pencil icon"></div>
             <div class="tool-square-flexbox" id="eraser-square"><img src="images/eraser.png" alt="eraser icon"></div>
-            <div class="tool-square-flexbox">change color
+            <div class="tool-square-flexbox">
                 <form>
                     <input id="color-picker" type="color">
                 </form>
             </div>
             <div class="tool-square-flexbox" id="rectangle-square"><img src="images/rectangle.png" alt="rectangle icon"></div>
-            <div class="tool-square-flexbox"><img src="images/ellipse.png" alt="ellipse icon"></div>
+            <div class="tool-square-flexbox" id="ellipse-square"><img src="images/ellipse.png" alt="ellipse icon"></div>
         </div>
         <div id="canvas-grid">
             <canvas id="canvas" width="800" height="400"></canvas>

@@ -1,13 +1,28 @@
-body {
-    padding: 0;
-    margin: 0;
+:root {
+    /* declaring CSS variables */
+    --lightblue: #b5d9ff;
+    --header-blue: #0e7ef5;
+    --border-blue: #c1f7ff;
+}
 
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-image: linear-gradient(var(--lightblue), #ffffff);
+    height: 100vh;
 }
 
 h1 {
-    color: red;
+    color: var(--header-blue);
+    font-family: "Broadway", sans-serif;
     text-align: center;
-    font-size: 18px;
+    font-size: 32px;
+    margin-bottom: 20px;
+    text-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 #big-flexbox {
@@ -18,17 +33,21 @@ h1 {
 #tool-flexbox {
     display: flex;
     flex-direction: column;
+    gap: 10px;
 }
 
 #save-flexbox {
     display: flex;
     flex-direction: column;
+    gap: 10px;
 }
 
 #canvas{
-    border: 1px black solid;
     height: 400px;
     width: 800px;
+    background-color: white;
+    border: 1px var(--border-blue) solid;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .save-square-flexbox, .tool-square-flexbox {
@@ -36,9 +55,17 @@ h1 {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 50px;
-    width: 50px;
-    border: 1px solid black;
+    height: 80px;
+    width: 80px;
+    border: 1px solid var(--border-blue);
+    border-radius: 20px;
+    background-color: white;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    /* horizontal offset, vertical offset, blur radius, shadow color*/
+}
+
+.save-square-flexbox:hover, .tool-square-flexbox:hover {
+    background-color:aliceblue;
 }
 
 .tool-square-flexbox > img, .save-square-flexbox > img {
@@ -51,7 +78,7 @@ h1 {
 }
 
 h3 {
-    position: fixed;
+    visibility: fixed;
     top: 0;
     left: 0;
 }

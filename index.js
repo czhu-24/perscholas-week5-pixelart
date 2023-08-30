@@ -20,16 +20,14 @@ const eraserPicker = document.getElementById("eraser-square");
 const rectanglePicker = document.getElementById("rectangle-square");
 const ellipsePicker = document.getElementById("ellipse-square");
 const bucketPicker = document.getElementById("bucket-square");
+const exportPicker = document.getElementById("export-square");
 const resetPicker = document.getElementById("reset-square");
 
 // text
-
 const toolsizeText = document.querySelector("#toolsize-square span");
 
 // for debugging
 const currentToolText = document.getElementById("current-tool");
-
-//
 
 const ctx = canvas.getContext("2d");
 const rect = canvas.getBoundingClientRect(); // Get canvas's position on the page
@@ -181,6 +179,19 @@ ellipsePicker.addEventListener("click", (e) => {
 bucketPicker.addEventListener("click", (e) => {
     currentMode = "bucket";
     currentToolText.textContent = currentMode; // TO REMOVE
+});
+
+exportPicker.addEventListener("click", (e) => {
+    let canvasUrl = canvas.toDataURL("image/png", 0.5);
+    // .toDataURL takes in image type & a number btwn 0 & 1
+    // for image quality (optional)
+    console.log(canvasUrl);
+    const downloadEl = document.createElement('a');
+    downloadEl.href = canvasUrl;
+    downloadEl.download = "image.png";
+    // click on anchor element so we can download it
+    downloadEl.click();
+    downloadEl.remove();
 });
 
 resetPicker.addEventListener("click", () => {

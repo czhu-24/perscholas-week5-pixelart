@@ -212,7 +212,14 @@ undoPicker.addEventListener("click", () => {
     // "dumb" fix: when pastArray.len = 1, do it... manually
     console.log("clicked on undo");
 
-    if(pastArray.length > 1){
+    // technically i fixed it... 
+    // IT"S SO UGLY *SOB* 
+
+    if(pastArray.length === 1){
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        futureArray.unshift(pastArray.pop());
+    }else if(pastArray.length > 1){
         // lastPast / last item of pastArray is the current state
         // the 2nd-to-last item is what we want to see
         ctx.putImageData(pastArray[pastArray.length - 2], 0, 0);

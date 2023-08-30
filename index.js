@@ -20,8 +20,11 @@ const eraserPicker = document.getElementById("eraser-square");
 const rectanglePicker = document.getElementById("rectangle-square");
 const ellipsePicker = document.getElementById("ellipse-square");
 const bucketPicker = document.getElementById("bucket-square");
-const exportPicker = document.getElementById("export-square");
+
 const resetPicker = document.getElementById("reset-square");
+const undoPicker = document.getElementById("undo-square");
+const redoPicker = document.getElementById("redo-square");
+const exportPicker = document.getElementById("export-square");
 
 // text
 const toolsizeText = document.querySelector("#toolsize-square span");
@@ -29,7 +32,9 @@ const toolsizeText = document.querySelector("#toolsize-square span");
 // for debugging
 const currentToolText = document.getElementById("current-tool");
 
-const ctx = canvas.getContext("2d");
+// canvas variables
+const ctx = canvas.getContext("2d", {willReadFrequently: true});
+// willReadFrequently optional parameter is supposed to optimize for reading frequently...
 const rect = canvas.getBoundingClientRect(); // Get canvas's position on the page
 
 // scaling for high DPI displays
@@ -38,6 +43,14 @@ const scaleFactor = window.devicePixelRatio;
 canvas.width = canvas.clientWidth * scaleFactor;
 canvas.height = canvas.clientHeight * scaleFactor;
 ctx.scale(scaleFactor, scaleFactor);
+
+// make the actual canvas element's imageData have white background
+ctx.fillStyle = "white";
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+// array to store history of previous & "future" canvas states
+const pastArray = []; // should contain a max of 10 items
+const futureArray = [];
 
 const canvasMousedown = (e) => {
     isMoving = true;
@@ -98,7 +111,7 @@ const canvasMousemove = (e) => {
         case("ellipse"):
             break;
         case("eraser"):
-            ctx.fillRect(x, y, 5, 5);
+            ctx.fillRect(x, y, toolSize, toolSize);
             break;
     }
 
@@ -139,6 +152,18 @@ const canvasMouseup = (e) => {
             break;
     }
     isMoving = false;
+    // we don't want to store ALL the history... just a little
+    // so um... last thing in pastArray represents our current state
+    if(pastArray.length < 8){
+        pastArray.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+    }else{
+        // remove the first (oldest) thing in pastArray
+        pastArray.splice(0, 1); 
+        // add the current canvas to pastArray at the very end
+        pastArray.push(ctx.getImageData(0,0, canvas.width, canvas.height));
+    }
+    futureArray.length = 0; // if you make a new change to canvas there won't be future history anymore
+    
 };
 
 
@@ -181,6 +206,41 @@ bucketPicker.addEventListener("click", (e) => {
     currentToolText.textContent = currentMode; // TO REMOVE
 });
 
+undoPicker.addEventListener("click", () => {
+    // TODO
+    // working but it won't go back to the last 2 actions...
+    // "dumb" fix: when pastArray.len = 1, do it... manually
+    console.log("clicked on undo");
+
+    if(pastArray.length > 1){
+        // lastPast / last item of pastArray is the current state
+        // the 2nd-to-last item is what we want to see
+        ctx.putImageData(pastArray[pastArray.length - 2], 0, 0);
+        const lastPast = pastArray.pop();
+        futureArray.unshift(lastPast); 
+    }else{
+        console.log("no more past history");
+    }
+});
+
+redoPicker.addEventListener("click", () => {
+    // move the first element of futureArray to the end of pastArray
+    console.log("clicked on redo");
+
+    if(futureArray.length === 0){ // no future history, do nothing
+        console.log("No more future history");
+        return;
+    }else{
+        ctx.putImageData(futureArray[0], 0, 0);
+        const firstFuture = futureArray.shift();
+        // removes futureArray's first element
+        pastArray.push(firstFuture);
+        
+    }
+    
+
+});
+
 exportPicker.addEventListener("click", (e) => {
     let canvasUrl = canvas.toDataURL("image/png", 0.5);
     // .toDataURL takes in image type & a number btwn 0 & 1
@@ -196,6 +256,8 @@ exportPicker.addEventListener("click", (e) => {
 
 resetPicker.addEventListener("click", () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pastArray.length = 0;
+    futureArray.length = 0;
 });
 
 

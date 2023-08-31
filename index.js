@@ -268,4 +268,24 @@ resetPicker.addEventListener("click", () => {
 });
 
 
+// Generate random palette
+
+const url = "http://colormind.io/api/";
+const data = {
+	model : "default"
+}
+
+var http = new XMLHttpRequest();
+
+http.open("POST", url, true);
+http.send(JSON.stringify(data));
+
+http.onreadystatechange = function() {
+	if(http.readyState == 4 && http.status == 200) {
+		var palette = JSON.parse(http.responseText).result;
+        console.log(palette);
+	}
+}
+
+
 

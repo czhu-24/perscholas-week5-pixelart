@@ -52,6 +52,9 @@ ctx.fillRect(0, 0, canvas.width, canvas.height);
 const pastArray = []; // should contain a max of 10 items
 const futureArray = [];
 
+// array to hold palette swatches
+let palette;
+
 const canvasMousedown = (e) => {
     isMoving = true;
 
@@ -270,22 +273,29 @@ resetPicker.addEventListener("click", () => {
 
 // Generate random palette
 
-const url = "http://colormind.io/api/";
-const data = {
-	model : "default"
+const generatePalette = () => {
+    const url = "http://colormind.io/api/";
+    const data = {
+        model : "default"
+    }
+
+    const http = new XMLHttpRequest();
+
+    http.open("POST", url, true);
+    http.send(JSON.stringify(data));
+
+    http.onreadystatechange = function() {
+        if(http.readyState == 4 && http.status == 200) {
+            palette = JSON.parse(http.responseText).result;
+            console.log(palette);
+        }
+    }
 }
 
-var http = new XMLHttpRequest();
+generatePalette();
 
-http.open("POST", url, true);
-http.send(JSON.stringify(data));
 
-http.onreadystatechange = function() {
-	if(http.readyState == 4 && http.status == 200) {
-		var palette = JSON.parse(http.responseText).result;
-        console.log(palette);
-	}
-}
+
 
 
 

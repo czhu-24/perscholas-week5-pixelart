@@ -76,11 +76,20 @@ h1 {
     width: 90%;
 }
 
-#color-suggestions-flexbox {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    align-content: center;
+#color-suggestions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+}
+
+.suggested-color {
+    background-color: var(--lightblue);
+    height: 30px;
+    width: 100px;
+}
+
+.suggested-color-rgb {
+
 }
 
 #color-suggestions-flexbox > div:first-child {

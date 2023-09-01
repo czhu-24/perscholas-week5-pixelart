@@ -129,10 +129,11 @@ const canvasMousemove = (e) => {
   const x = e.pageX - rect.left;
   const y = e.pageY - rect.top;
 
-  //const currentX = e.pageX - rect.left;
-  //const currentY = e.pageY - rect.top;
-  //const width = currentX - initialX;
-  //const height = currentY - initialY;
+  const width = x - initialX;
+  const height = y - initialY;
+
+  const radiusX = Math.abs(initialX - x) / 2; // the "major axis" radius of the ellipse
+  const radiusY = Math.abs(initialY - y) / 2;
 
   // for the rectangle & ellipse tools
   if (e.shiftKey) {
@@ -144,8 +145,27 @@ const canvasMousemove = (e) => {
   switch (currentMode) {
     case "pencil":
       ctx.lineTo(x, y);
+      ctx.stroke();
       break;
     case "rectangle":
+      // erase & redraw current canvas
+      ctx.putImageData(pastArray[pastArray.length - 1], 0, 0);
+      // draw rectangle
+      ctx.strokeRect(initialX, initialY, width, height);
+
+      if (isShiftHeldDown) {
+        ctx.putImageData(pastArray[pastArray.length - 1], 0, 0);
+        ctx.strokeRect(
+          initialX,
+          initialY,
+          (width + height) / 2,
+          (width + height) / 2
+        );
+      } else {
+        ctx.putImageData(pastArray[pastArray.length - 1], 0, 0);
+        // draw rectangle
+        ctx.strokeRect(initialX, initialY, width, height);
+      }
       break;
     case "ellipse":
       break;
@@ -168,7 +188,7 @@ const canvasMouseup = (e) => {
 
   switch (currentMode) {
     case "pencil":
-      ctx.stroke();
+      //ctx.stroke();
       break;
     case "rectangle":
       if (isShiftHeldDown) {
@@ -215,7 +235,7 @@ const canvasMouseup = (e) => {
   if (pastArray.length < 8) {
     pastArray.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
   } else {
-    // remove the first (oldest) thing in pastArray
+    // remove the first (oldest) element in pastArray
     pastArray.splice(0, 1);
     // add the current canvas to pastArray at the very end
     pastArray.push(ctx.getImageData(0, 0, canvas.width, canvas.height));

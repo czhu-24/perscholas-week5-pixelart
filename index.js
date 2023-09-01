@@ -20,11 +20,16 @@ const eraserPicker = document.getElementById("eraser-square");
 const rectanglePicker = document.getElementById("rectangle-square");
 const ellipsePicker = document.getElementById("ellipse-square");
 const bucketPicker = document.getElementById("bucket-square");
+const eyedropperPicker = document.getElementById("eyedropper-square");
 
 const resetPicker = document.getElementById("reset-square");
 const undoPicker = document.getElementById("undo-square");
 const redoPicker = document.getElementById("redo-square");
 const exportPicker = document.getElementById("export-square");
+const refreshColorsPicker = document.getElementById("refresh-colors-square");
+
+const suggestedColors = document.querySelectorAll(".suggested-color");
+const suggestedColorsRgb = document.querySelectorAll(".suggested-color-rgb");
 
 // text
 const toolsizeText = document.querySelector("#toolsize-square span");
@@ -55,15 +60,16 @@ const futureArray = [];
 // array to hold palette swatches
 let palette;
 
+
 const canvasMousedown = (e) => {
     isMoving = true;
 
-    const x = e.clientX - rect.left; // Cursor's x-coordinate relative to the canvas, takes into account the wiewport (that's e.clientX) as well
+    const x = e.pageX - rect.left; // Cursor's x-coordinate relative to the canvas, takes into account the wiewport (that's e.pageX) as well
     // so (0,0) would be top left of canvas. the clientX is like (x # pixels right of origin) & rect.left is the same # of pixels right on the page... x & y are positive
-    const y = e.clientY - rect.top; // Cursor's y-coordinate relative to the canvas
+    const y = e.pageY - rect.top; // Cursor's y-coordinate relative to the canvas
 
-    initialX = e.clientX - rect.left; // need to calculate the initial click location on canvas coordinate
-    initialY = e.clientY - rect.top;
+    initialX = e.pageX - rect.left; // need to calculate the initial click location on canvas coordinate
+    initialY = e.pageY - rect.top;
 
     ctx.lineWidth = toolSize;
 
@@ -82,6 +88,12 @@ const canvasMousedown = (e) => {
         case("eraser"):
             ctx.fillStyle = backgroundColor;
             break;
+        case("eyedropper"):
+            const pixelData = ctx.getImageData(x,y,1,1).data;
+            currentColor = `rgb(${pixelData[0]},${pixelData[1]},${pixelData[2]})`;
+            colorPicker.value = currentColor;
+            console.log(currentColor);
+            break;
     }
 }
 
@@ -89,8 +101,8 @@ const canvasMousemove = (e) => {
     if(!isMoving){
         return;
     }
-    const x = e.clientX - rect.left; 
-    const y = e.clientY - rect.top; 
+    const x = e.pageX - rect.left; 
+    const y = e.pageY - rect.top; 
 
 
     //const currentX = e.pageX - rect.left;
@@ -121,11 +133,9 @@ const canvasMousemove = (e) => {
 };
 
 const canvasMouseup = (e) => {
-    const x = e.clientX - rect.left; 
-    const y = e.clientY - rect.top; 
+    const x = e.pageX - rect.left; 
+    const y = e.pageY - rect.top; 
 
-    //const currentX = e.pageX - rect.left;
-    //const currentY = e.pageY - rect.top;
     const width = x - initialX;
     const height = y - initialY;
 
@@ -155,6 +165,7 @@ const canvasMouseup = (e) => {
             break;
     }
     isMoving = false;
+
     // we don't want to store ALL the history... just a little
     // so um... last thing in pastArray represents our current state
     if(pastArray.length < 8){
@@ -165,6 +176,7 @@ const canvasMouseup = (e) => {
         // add the current canvas to pastArray at the very end
         pastArray.push(ctx.getImageData(0,0, canvas.width, canvas.height));
     }
+
     futureArray.length = 0; // if you make a new change to canvas there won't be future history anymore
     
 };
@@ -173,6 +185,8 @@ const canvasMouseup = (e) => {
 colorPicker.addEventListener("input", (e) => {
     currentColor = e.target.value;
 });
+
+// INITIALIZATION STUFF 
 
 canvas.addEventListener("mousedown", canvasMousedown);
 canvas.addEventListener("mousemove", canvasMousemove);
@@ -209,6 +223,11 @@ bucketPicker.addEventListener("click", (e) => {
     currentToolText.textContent = currentMode; // TO REMOVE
 });
 
+eyedropperPicker.addEventListener("click", () => {
+    currentMode = "eyedropper";
+    currentToolText.textContent = currentMode; // TO REMOVE
+});
+
 undoPicker.addEventListener("click", () => {
     // TODO
     // working but it won't go back to the last 2 actions...
@@ -218,11 +237,7 @@ undoPicker.addEventListener("click", () => {
     // technically i fixed it... 
     // IT"S SO UGLY *SOB* 
 
-    if(pastArray.length === 1){
-        ctx.fillStyle = "white";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        futureArray.unshift(pastArray.pop());
-    }else if(pastArray.length > 1){
+    if(pastArray.length > 1){
         // lastPast / last item of pastArray is the current state
         // the 2nd-to-last item is what we want to see
         ctx.putImageData(pastArray[pastArray.length - 2], 0, 0);
@@ -245,10 +260,7 @@ redoPicker.addEventListener("click", () => {
         const firstFuture = futureArray.shift();
         // removes futureArray's first element
         pastArray.push(firstFuture);
-        
     }
-    
-
 });
 
 exportPicker.addEventListener("click", (e) => {
@@ -270,9 +282,7 @@ resetPicker.addEventListener("click", () => {
     futureArray.length = 0;
 });
 
-
 // Generate random palette
-
 const generatePalette = () => {
     const url = "http://colormind.io/api/";
     const data = {
@@ -280,19 +290,35 @@ const generatePalette = () => {
     }
 
     const http = new XMLHttpRequest();
+    // can retrieve stuff from server without refreshing page
+    // AJAX
 
     http.open("POST", url, true);
     http.send(JSON.stringify(data));
 
     http.onreadystatechange = function() {
         if(http.readyState == 4 && http.status == 200) {
+            // state of 4, requested finished & response is ready
+            // status is OK
             palette = JSON.parse(http.responseText).result;
+
+            for(let i = 0; i < palette.length; i++){
+                suggestedColorsRgb[i].textContent = palette[i];
+                suggestedColors[i].style.background = `rgb(${palette[i][0]},${palette[i][1]},${palette[i][2]})`;
+            }
             console.log(palette);
         }
     }
 }
 
+refreshColorsPicker.addEventListener("click", () => generatePalette());
+
+
+// INITIALIZATION 
 generatePalette();
+
+// add blank canvas to pastArray
+pastArray.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
 
 
 

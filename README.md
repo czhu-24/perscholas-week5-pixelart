@@ -2,3 +2,4 @@
 
 This web app will hopefully be created using HTML, CSS, vanilla JS, and the Canvas API. 
 
+I am suffering. halp.

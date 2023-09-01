@@ -83,13 +83,8 @@ h1 {
 }
 
 .suggested-color {
-    background-color: var(--lightblue);
     height: 30px;
     width: 100px;
-}
-
-.suggested-color-rgb {
-
 }
 
 #color-suggestions-flexbox > div:first-child {

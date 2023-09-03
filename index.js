@@ -106,21 +106,16 @@ const canvasMousedown = (e) => {
       break;
     case "ellipse":
       ctx.strokeStyle = currentColor;
-      ctx.beginPath();
+      break;
     case "eraser":
       ctx.fillStyle = backgroundColor;
       break;
     case "eyedropper":
-      const pixelData = ctx.getImageData(x, y, 1, 1).data;
-      currentColor = `rgba(${pixelData[0]},${pixelData[1]},${pixelData[2]}, ${pixelData[3]})`;
-      colorPicker.value = rgbToHex(
-        `${pixelData[0]},${pixelData[1]},${pixelData[2]}`
-      );
-      // input for type="color" must be of format #rrggbb
-      console.log(currentColor);
       break;
-  }
-};
+    }
+  
+    
+  };
 
 const canvasMousemove = (e) => {
   if (!isMoving) {
@@ -132,8 +127,9 @@ const canvasMousemove = (e) => {
   const width = x - initialX;
   const height = y - initialY;
 
-  const radiusX = Math.abs(initialX - x) / 2; // the "major axis" radius of the ellipse
-  const radiusY = Math.abs(initialY - y) / 2;
+  // redefine radiusX & radiusY just for the circle? 
+  const radiusX = (initialX - x)/ 2; // the "major axis" radius of the ellipse
+  const radiusY = (initialY - y) / 2;
 
   // for the rectangle & ellipse tools
   if (e.shiftKey) {
@@ -149,9 +145,9 @@ const canvasMousemove = (e) => {
       break;
     case "rectangle":
       // erase & redraw current canvas
-      ctx.putImageData(pastArray[pastArray.length - 1], 0, 0);
+      //ctx.putImageData(pastArray[pastArray.length - 1], 0, 0);
       // draw rectangle
-      ctx.strokeRect(initialX, initialY, width, height);
+      //ctx.strokeRect(initialX, initialY, width, height);
 
       if (isShiftHeldDown) {
         ctx.putImageData(pastArray[pastArray.length - 1], 0, 0);
@@ -168,6 +164,36 @@ const canvasMousemove = (e) => {
       }
       break;
     case "ellipse":
+        // erase & redraw current canvas
+      
+      // draw ellipse
+      if (isShiftHeldDown) {
+        ctx.putImageData(pastArray[pastArray.length - 1], 0, 0);
+      ctx.beginPath();
+        //const radius = (radiusX + radiusY) / 2;
+        ctx.ellipse(
+            initialX + radiusX,
+            initialY + radiusY,
+            Math.abs(radiusX * 2),
+            Math.abs(radiusX * 2),
+            0, // start angle
+            0, // end angle
+            2 * Math.PI
+          );
+      } else {
+        ctx.putImageData(pastArray[pastArray.length - 1], 0, 0);
+        ctx.beginPath();
+        ctx.ellipse(
+          initialX + radiusX,
+          initialY + radiusY,
+          Math.abs(radiusX * 2),
+          Math.abs(radiusY * 2),
+          0, // start angle
+          0, // end angle
+          2 * Math.PI
+        );
+      }
+      ctx.stroke();
       break;
     case "eraser":
       ctx.fillRect(x, y, toolSize, toolSize);
@@ -191,40 +217,19 @@ const canvasMouseup = (e) => {
       //ctx.stroke();
       break;
     case "rectangle":
-      if (isShiftHeldDown) {
-        ctx.strokeRect(
-          initialX,
-          initialY,
-          (width + height) / 2,
-          (width + height) / 2
-        );
-      } else {
-        ctx.strokeRect(initialX, initialY, width, height);
-      }
+    //   if (isShiftHeldDown) {
+    //     ctx.strokeRect(
+    //       initialX,
+    //       initialY,
+    //       (width + height) / 2,
+    //       (width + height) / 2
+    //     );
+    //   } else {
+    //     ctx.strokeRect(initialX, initialY, width, height);
+    //   }
       break;
     case "ellipse":
-      if (isShiftHeldDown) {
-        ctx.arc(
-          initialX + radiusX,
-          initialY + radiusY,
-          radiusX,
-          0,
-          2 * Math.PI,
-          false
-        );
-      } else {
-        ctx.ellipse(
-          initialX + radiusX,
-          initialY + radiusY,
-          radiusX,
-          radiusY,
-          0,
-          0,
-          2 * Math.PI,
-          true
-        );
-      }
-      ctx.stroke();
+        break;
     case "eraser":
       break;
   }
@@ -244,6 +249,15 @@ const canvasMouseup = (e) => {
   futureArray.length = 0; // if you make a new change to canvas there won't be future history anymore
 };
 
+const removeOtherTools = () => {
+    pencilPicker.classList.remove("active-tool");
+    eraserPicker.classList.remove("active-tool");
+    rectanglePicker.classList.remove("active-tool");
+    ellipsePicker.classList.remove("active-tool");
+    bucketPicker.classList.remove("active-tool");
+    eyedropperPicker.classList.remove("active-tool");
+}
+
 colorPicker.addEventListener("input", (e) => {
   currentColor = e.target.value;
 });
@@ -262,31 +276,74 @@ toolsizePicker.addEventListener("click", (e) => {
 pencilPicker.addEventListener("click", (e) => {
   currentMode = "pencil";
   currentToolText.textContent = currentMode; // TO REMOVE
+  removeOtherTools();
+  pencilPicker.classList.add("active-tool");
 });
 
 eraserPicker.addEventListener("click", (e) => {
   currentMode = "eraser";
   currentToolText.textContent = currentMode; // TO REMOVE
+  removeOtherTools();
+  eraserPicker.classList.add("active-tool");
 });
 
 rectanglePicker.addEventListener("click", (e) => {
   currentMode = "rectangle";
   currentToolText.textContent = currentMode; // TO REMOVE
+  removeOtherTools();
+  rectanglePicker.classList.add("active-tool");
 });
 
 ellipsePicker.addEventListener("click", (e) => {
   currentMode = "ellipse";
   currentToolText.textContent = currentMode; // TO REMOVE
+  removeOtherTools();
+  ellipsePicker.classList.add("active-tool");
 });
 
 bucketPicker.addEventListener("click", (e) => {
   currentMode = "bucket";
   currentToolText.textContent = currentMode; // TO REMOVE
+  removeOtherTools();
+  bucketPicker.classList.add("active-tool");
 });
 
-eyedropperPicker.addEventListener("click", () => {
-  currentMode = "eyedropper";
-  currentToolText.textContent = currentMode; // TO REMOVE
+eyedropperPicker.addEventListener("click", (e) => {
+    currentMode = "eyedropper";
+    currentToolText.textContent = currentMode; // TO REMOVE
+    removeOtherTools();
+    eyedropperPicker.classList.add("active-tool");
+
+    const resultElement = document.getElementById("result");
+  
+    if (!window.EyeDropper) {
+      console.log("Your browser doesn't support Eyedropper");
+      // DO FIXES FOR FIREFOX & SAFARI *sob* *sob*
+      // if it clicks over the canvas, then change color to that pixel's color
+    }else{
+    //     const pixelData = ctx.getImageData(x, y, 1, 1).data;
+    //     currentColor = `rgba(${pixelData[0]},${pixelData[1]},${pixelData[2]}, ${pixelData[3]})`;
+    //     colorPicker.value = rgbToHex(
+    //     `${pixelData[0]},${pixelData[1]},${pixelData[2]}`
+    //   );
+    //   // input for type="color" must be of format #rrggbb
+    //   console.log(currentColor);
+    }
+
+    const eyeDropper = new EyeDropper();
+    eyeDropper
+      .open()
+      .then((result) => {
+        //resultElement.textContent = result.sRGBHex; // TO REMOVE
+        currentColor = result.sRGBHex;
+        colorPicker.value = result.sRGBHex;
+        //resultElement.style.backgroundColor = result.sRGBHex; // TO REMOIVE
+      })
+      .catch((e) => {
+        //resultElement.textContent = e; // TO REMOVE
+        currentColor = result.sRGBHex;
+      });
+      
 });
 
 undoPicker.addEventListener("click", () => {
@@ -367,10 +424,15 @@ const generatePalette = () => {
       palette = JSON.parse(http.responseText).result;
 
       for (let i = 0; i < palette.length; i++) {
-        suggestedColorsRgb[i].textContent = palette[i];
+        //suggestedColorsRgb[i].textContent = palette[i];
         suggestedColors[
           i
         ].style.background = `rgb(${palette[i][0]},${palette[i][1]},${palette[i][2]})`;
+
+        suggestedColors[i].addEventListener("click", () => {
+            currentColor = suggestedColors[i].style.background;
+            colorPicker.value = rgbToHex(currentColor);
+        });
       }
       console.log(palette);
     }
@@ -380,7 +442,11 @@ const generatePalette = () => {
 refreshColorsPicker.addEventListener("click", () => generatePalette());
 
 // INITIALIZATION
-generatePalette();
+
+document.addEventListener("DOMContentLoaded", function () {
+    // making sure this only happens once everything in the DOM is loaded
+    generatePalette();
+});
 
 // add blank canvas to pastArray
 pastArray.push(ctx.getImageData(0, 0, canvas.width, canvas.height));

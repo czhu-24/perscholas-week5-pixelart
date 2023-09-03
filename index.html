@@ -8,6 +8,7 @@
     <title>Document</title>
 </head>
 <body>
+    <p id="result"></p>
     <h3 id="current-tool">pencil</h3>
     <h1>Drawing App</h1>
     <div id="big-flexbox">
@@ -26,7 +27,7 @@
             <div class="tool-square-flexbox" id="rectangle-square"><img src="images/rectangle.png" alt="rectangle icon"></div>
             <div class="tool-square-flexbox" id="ellipse-square"><img src="images/ellipse.png" alt="ellipse icon"></div>
             <div class="tool-square-flexbox" id="bucket-square">bucket here *sob*</div>
-            <div class="tool-square-flexbox" id="eyedropper-square">eye dropper tool</div>
+            <div class="tool-square-flexbox" id="eyedropper-square"><button id="start-button">Eyedropper</button></div>
         </div>
         <div>
             <canvas id="canvas"></canvas>
@@ -36,12 +37,12 @@
                 <div class="suggested-color"></div>
                 <div class="suggested-color"></div>
                 <div class="suggested-color"></div>
+                <!-- <div class="suggested-color-rgb"></div>
                 <div class="suggested-color-rgb"></div>
                 <div class="suggested-color-rgb"></div>
                 <div class="suggested-color-rgb"></div>
-                <div class="suggested-color-rgb"></div>
-                <div class="suggested-color-rgb"></div>
-                <div id="test-magnifier"></div>
+                <div class="suggested-color-rgb"></div> -->
+                <!-- <div id="test-magnifier"></div> -->
             </div>
         </div>
         <div id="save-flexbox">

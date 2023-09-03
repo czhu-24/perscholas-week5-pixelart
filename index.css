@@ -8,6 +8,7 @@
 * {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
 body {
@@ -54,8 +55,8 @@ h1 {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 70px;
-    width: 70px;
+    height: 60px;
+    width: 60px;
     border: 1px solid var(--border-blue);
     border-radius: 20px;
     background-color: white;
@@ -65,6 +66,11 @@ h1 {
 
 .save-square-flexbox:hover, .tool-square-flexbox:hover {
     background-color:aliceblue;
+}
+
+.active-tool {
+    background-color: aliceblue;
+    border: 3px solid var(--border-blue)
 }
 
 .tool-square-flexbox > img, .save-square-flexbox > img {
@@ -77,15 +83,18 @@ h1 {
 }
 
 #color-suggestions-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr;
+    padding-top: 50px;
+    display: flex;
+    justify-content: center;
+
 }
 
 .suggested-color {
     height: 30px;
     width: 100px;
 }
+
+
 
 #color-suggestions-flexbox > div:first-child {
 

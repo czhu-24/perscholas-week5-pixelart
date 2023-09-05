@@ -3,57 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./index.css">
-    <script src="./index.js" defer></script>
-    <title>Document</title>
+    <title>Enter Page</title>
 </head>
 <body>
-    <p id="result"></p>
-    <h3 id="current-tool">pencil</h3>
-    <h1>Drawing App</h1>
-    <div id="big-flexbox">
-        <div id="tool-flexbox">
-            <div class="tool-square-flexbox" id="toolsize-square">
-                <input type="range" min="1" max="20" value="1">
-                <span>1</span>
-            </div>
-            <div class="tool-square-flexbox" id="pencil-square"><img src="images/pencil.png" alt="pencil icon"></div>
-            <div class="tool-square-flexbox" id="eraser-square"><img src="images/eraser.png" alt="eraser icon"></div>
-            <div class="tool-square-flexbox">
-                <form>
-                    <input id="color-picker" type="color">
-                </form>
-            </div>
-            <div class="tool-square-flexbox" id="rectangle-square"><img src="images/rectangle.png" alt="rectangle icon"></div>
-            <div class="tool-square-flexbox" id="ellipse-square"><img src="images/ellipse.png" alt="ellipse icon"></div>
-            <div class="tool-square-flexbox" id="bucket-square">bucket here *sob*</div>
-            <div class="tool-square-flexbox" id="eyedropper-square"><button id="start-button">Eyedropper</button></div>
-        </div>
-        <div>
-            <canvas id="canvas"></canvas>
-            <div id="color-suggestions-grid">
-                <div class="suggested-color"></div>
-                <div class="suggested-color"></div>
-                <div class="suggested-color"></div>
-                <div class="suggested-color"></div>
-                <div class="suggested-color"></div>
-                <!-- <div class="suggested-color-rgb"></div>
-                <div class="suggested-color-rgb"></div>
-                <div class="suggested-color-rgb"></div>
-                <div class="suggested-color-rgb"></div>
-                <div class="suggested-color-rgb"></div> -->
-                <!-- <div id="test-magnifier"></div> -->
-            </div>
-        </div>
-        <div id="save-flexbox">
-            <div class="save-square-flexbox" id="reset-square"><img src="images/reset.png" alt="reset image"></div>
-            <div class="save-square-flexbox" id="undo-square"><img src="images/undo.png" alt="undo image"></div>
-            <div class="save-square-flexbox" id="redo-square"><img src="images/redo.png" alt="redo image"></div>
-            <div class="save-square-flexbox" id="export-square"><img src="images/export.png" alt="export image"></div>
-            <div class="save-square-flexbox" id="refresh-colors-square">refresh colors</div>
-        </div>
-    </div>
-    
-    
+    <form id="name-form">
+        <label for="name-input">Please enter your name:</label>
+        <input type="text" id="name-input" required>
+        <button type="submit">Submit</button>
+    </form>
+    <a href="./drawing.html">Go to Drawing App</a>
+
+    <script>
+        const nameForm = document.getElementById("name-form");
+        const nameInput = document.getElementById("name-input");
+
+        // Add a new p tag to the DOM
+        const greeting = document.createElement("p");
+        greeting.id = "greeting"; 
+        greeting.style.display = "none"; // make it not display
+        document.body.appendChild(greeting); 
+
+        nameForm.addEventListener("submit", (e) => {
+            e.preventDefault(); // prevent refresh
+
+            greeting.textContent = `Hello, ${nameInput.value}!`;
+            greeting.style.display = "block"; 
+
+            setTimeout(() => {
+            greeting.remove();
+        }, 5000); // after 5 seconds, remove the greeting from the DOM
+        });
+
+        
+    </script>
 </body>
 </html>

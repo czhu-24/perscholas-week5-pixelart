@@ -19,7 +19,7 @@ const pencilPicker = document.getElementById("pencil-square");
 const eraserPicker = document.getElementById("eraser-square");
 const rectanglePicker = document.getElementById("rectangle-square");
 const ellipsePicker = document.getElementById("ellipse-square");
-const bucketPicker = document.getElementById("bucket-square");
+// const bucketPicker = document.getElementById("bucket-square");
 const eyedropperPicker = document.getElementById("eyedropper-square");
 
 const resetPicker = document.getElementById("reset-square");
@@ -34,8 +34,7 @@ const suggestedColorsRgb = document.querySelectorAll(".suggested-color-rgb");
 // text
 const toolsizeText = document.querySelector("#toolsize-square span");
 
-// for debugging
-const currentToolText = document.getElementById("current-tool");
+
 
 // canvas variables
 const ctx = canvas.getContext("2d", { willReadFrequently: true });
@@ -63,17 +62,21 @@ const futureArray = [];
 // array to hold palette swatches
 let palette;
 
+
+
 function rgbToHex(rgb) {
-  // Separate the RGB values
+  // match one or more digits & puts matches into an array
   const values = rgb.match(/\d+/g);
 
-  if (values && values.length === 3) {
-    // Convert each value to hexadecimal and pad with zeros
+  if (values && values.length === 3) { 
+    console.log(typeof values[0]);
+    // take array items (originally strings), makes them into ints, then converts them to their hex versions (toString(16)), pads extra zeros to the result (up to two) if necessary
+    
     const r = parseInt(values[0]).toString(16).padStart(2, "0");
     const g = parseInt(values[1]).toString(16).padStart(2, "0");
     const b = parseInt(values[2]).toString(16).padStart(2, "0");
 
-    // Construct the hexadecimal color value
+    // Construct the hex value
     return `#${r}${g}${b}`;
   }
   // Return a default color in case of an error
@@ -83,8 +86,7 @@ function rgbToHex(rgb) {
 const canvasMousedown = (e) => {
   isMoving = true;
 
-  const x = e.pageX - rect.left; // Cursor's x-coordinate relative to the canvas, takes into account the wiewport (that's e.pageX) as well
-  // so (0,0) would be top left of canvas. the clientX is like (x # pixels right of origin) & rect.left is the same # of pixels right on the page... x & y are positive
+  const x = e.pageX - rect.left; // Cursor's x-coordinate relative to the canvas. pageX is relative to entire webpage
   const y = e.pageY - rect.top; // Cursor's y-coordinate relative to the canvas
 
   initialX = e.pageX - rect.left; // need to calculate the initial click location on canvas coordinate
@@ -111,6 +113,14 @@ const canvasMousedown = (e) => {
       ctx.fillStyle = backgroundColor;
       break;
     case "eyedropper":
+      const pixelData = ctx.getImageData(x, y, 1, 1).data;
+      const red = pixelData[0];
+      const green = pixelData[1];
+      const blue = pixelData[2];
+      const hexColor = rgbToHex(`rgb(${red}, ${green}, ${blue})`);
+      currentColor = hexColor;
+      colorPicker.value = hexColor;
+      console.log(`pixel data 0 is ${hexColor}`);
       break;
     }
   
@@ -128,11 +138,12 @@ const canvasMousemove = (e) => {
   const height = y - initialY;
 
   // redefine radiusX & radiusY just for the circle? 
-  const radiusX = (initialX - x)/ 2; // the "major axis" radius of the ellipse
-  const radiusY = (initialY - y) / 2;
+  const radiusX = (initialX - x) / 2; // the "major axis" radius of the ellipse
+  // THIS CAN BE NEGATIVE
+  const radiusY = (initialY - y) / 2; // same as above
 
   // for the rectangle & ellipse tools
-  if (e.shiftKey) {
+  if (e.shiftKey) { 
     isShiftHeldDown = true;
   } else {
     isShiftHeldDown = false;
@@ -145,9 +156,6 @@ const canvasMousemove = (e) => {
       break;
     case "rectangle":
       // erase & redraw current canvas
-      //ctx.putImageData(pastArray[pastArray.length - 1], 0, 0);
-      // draw rectangle
-      //ctx.strokeRect(initialX, initialY, width, height);
 
       if (isShiftHeldDown) {
         ctx.putImageData(pastArray[pastArray.length - 1], 0, 0);
@@ -166,21 +174,26 @@ const canvasMousemove = (e) => {
     case "ellipse":
         // erase & redraw current canvas
       
-      // draw ellipse
+      
       if (isShiftHeldDown) {
+        // draw circle when shift held down (like most drawing apps)
+        // redraw canvas with everything that was there before the most recent ellipse
         ctx.putImageData(pastArray[pastArray.length - 1], 0, 0);
-      ctx.beginPath();
-        //const radius = (radiusX + radiusY) / 2;
-        ctx.ellipse(
-            initialX + radiusX,
-            initialY + radiusY,
-            Math.abs(radiusX * 2),
-            Math.abs(radiusX * 2),
-            0, // start angle
-            0, // end angle
-            2 * Math.PI
-          );
+        ctx.beginPath();
+
+        // Calculate the distance between the current cursor position and the initial click position
+
+      ctx.ellipse(
+        initialX + radiusX, // Center x position
+        initialY + radiusY, // Center y position
+        Math.abs(radiusX*2), // Radius
+        Math.abs(radiusX*2), // Radius
+        0, // Rotation
+        0, // Start angle
+        2 * Math.PI // End angle
+);
       } else {
+        // draw ellipse
         ctx.putImageData(pastArray[pastArray.length - 1], 0, 0);
         ctx.beginPath();
         ctx.ellipse(
@@ -188,8 +201,8 @@ const canvasMousemove = (e) => {
           initialY + radiusY,
           Math.abs(radiusX * 2),
           Math.abs(radiusY * 2),
-          0, // start angle
-          0, // end angle
+          0, 
+          0, 
           2 * Math.PI
         );
       }
@@ -202,41 +215,23 @@ const canvasMousemove = (e) => {
 };
 
 const canvasMouseup = (e) => {
-  const x = e.pageX - rect.left;
-  const y = e.pageY - rect.top;
-
-  const width = x - initialX;
-  const height = y - initialY;
-
-  //
-  const radiusX = Math.abs(initialX - x) / 2; // the "major axis" radius of the ellipse
-  const radiusY = Math.abs(initialY - y) / 2;
 
   switch (currentMode) {
     case "pencil":
       //ctx.stroke();
       break;
     case "rectangle":
-    //   if (isShiftHeldDown) {
-    //     ctx.strokeRect(
-    //       initialX,
-    //       initialY,
-    //       (width + height) / 2,
-    //       (width + height) / 2
-    //     );
-    //   } else {
-    //     ctx.strokeRect(initialX, initialY, width, height);
-    //   }
       break;
     case "ellipse":
-        break;
+      break;
     case "eraser":
       break;
   }
+
   isMoving = false;
 
   // we don't want to store ALL the history... just a little
-  // so um... last thing in pastArray represents our current state
+  // last thing in pastArray represents our current state
   if (pastArray.length < 8) {
     pastArray.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
   } else {
@@ -245,7 +240,6 @@ const canvasMouseup = (e) => {
     // add the current canvas to pastArray at the very end
     pastArray.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
   }
-
   futureArray.length = 0; // if you make a new change to canvas there won't be future history anymore
 };
 
@@ -254,7 +248,7 @@ const removeOtherTools = () => {
     eraserPicker.classList.remove("active-tool");
     rectanglePicker.classList.remove("active-tool");
     ellipsePicker.classList.remove("active-tool");
-    bucketPicker.classList.remove("active-tool");
+    // bucketPicker.classList.remove("active-tool");
     eyedropperPicker.classList.remove("active-tool");
 }
 
@@ -275,49 +269,50 @@ toolsizePicker.addEventListener("click", (e) => {
 
 pencilPicker.addEventListener("click", (e) => {
   currentMode = "pencil";
-  currentToolText.textContent = currentMode; // TO REMOVE
+  // currentToolText.textContent = currentMode; // TO REMOVE
   removeOtherTools();
   pencilPicker.classList.add("active-tool");
 });
 
 eraserPicker.addEventListener("click", (e) => {
   currentMode = "eraser";
-  currentToolText.textContent = currentMode; // TO REMOVE
+  // currentToolText.textContent = currentMode; // TO REMOVE
   removeOtherTools();
   eraserPicker.classList.add("active-tool");
 });
 
 rectanglePicker.addEventListener("click", (e) => {
   currentMode = "rectangle";
-  currentToolText.textContent = currentMode; // TO REMOVE
+  // currentToolText.textContent = currentMode; // TO REMOVE
   removeOtherTools();
   rectanglePicker.classList.add("active-tool");
 });
 
 ellipsePicker.addEventListener("click", (e) => {
   currentMode = "ellipse";
-  currentToolText.textContent = currentMode; // TO REMOVE
+  //currentToolText.textContent = currentMode; // TO REMOVE
   removeOtherTools();
   ellipsePicker.classList.add("active-tool");
 });
 
-bucketPicker.addEventListener("click", (e) => {
-  currentMode = "bucket";
-  currentToolText.textContent = currentMode; // TO REMOVE
-  removeOtherTools();
-  bucketPicker.classList.add("active-tool");
-});
+// bucketPicker.addEventListener("click", (e) => {
+//   currentMode = "bucket";
+//   currentToolText.textContent = currentMode; // TO REMOVE
+//   removeOtherTools();
+//   bucketPicker.classList.add("active-tool");
+// });
 
 eyedropperPicker.addEventListener("click", (e) => {
     currentMode = "eyedropper";
-    currentToolText.textContent = currentMode; // TO REMOVE
+    // currentToolText.textContent = currentMode; // TO REMOVE
     removeOtherTools();
     eyedropperPicker.classList.add("active-tool");
 
-    const resultElement = document.getElementById("result");
+    // const resultElement = document.getElementById("result");
   
     if (!window.EyeDropper) {
       console.log("Your browser doesn't support Eyedropper");
+      return;
       // DO FIXES FOR FIREFOX & SAFARI *sob* *sob*
       // if it clicks over the canvas, then change color to that pixel's color
     }else{
@@ -347,13 +342,7 @@ eyedropperPicker.addEventListener("click", (e) => {
 });
 
 undoPicker.addEventListener("click", () => {
-  // TODO
-  // working but it won't go back to the last 2 actions...
-  // "dumb" fix: when pastArray.len = 1, do it... manually
   console.log("clicked on undo");
-
-  // technically i fixed it...
-  // IT"S SO UGLY *SOB*
 
   if (pastArray.length > 1) {
     // lastPast / last item of pastArray is the current state
@@ -363,6 +352,7 @@ undoPicker.addEventListener("click", () => {
     futureArray.unshift(lastPast);
   } else {
     console.log("no more past history");
+    return;
   }
 });
 
@@ -383,6 +373,13 @@ redoPicker.addEventListener("click", () => {
 });
 
 exportPicker.addEventListener("click", (e) => {
+
+  canvas.classList.add("animated");
+
+  setTimeout(() => {
+    canvas.classList.remove("animated");
+}, 500); //set to duration of CSS animation
+
   let canvasUrl = canvas.toDataURL("image/png", 0.5);
   // .toDataURL takes in image type & a number btwn 0 & 1
   // for image quality (optional)
@@ -400,7 +397,9 @@ resetPicker.addEventListener("click", () => {
   pastArray.length = 0;
   futureArray.length = 0;
   currentMode = "pencil";
-  currentToolText.textContent = currentMode; // TO REMOVE
+  removeOtherTools();
+  pencilPicker.classList.add("active-tool");
+  // currentToolText.textContent = currentMode; // TO REMOVE
 });
 
 // Generate random palette
@@ -419,19 +418,17 @@ const generatePalette = () => {
 
   http.onreadystatechange = function () {
     if (http.readyState == 4 && http.status == 200) {
-      // state of 4, requested finished & response is ready
-      // status is OK
+      // state of 4 means requested finished & status of 200 means response is OK
       palette = JSON.parse(http.responseText).result;
 
       for (let i = 0; i < palette.length; i++) {
         //suggestedColorsRgb[i].textContent = palette[i];
-        suggestedColors[
-          i
-        ].style.background = `rgb(${palette[i][0]},${palette[i][1]},${palette[i][2]})`;
+        const rgbColors = `rgb(${palette[i][0]},${palette[i][1]},${palette[i][2]})`;
+        suggestedColors[i].style.background = rgbColors;
 
         suggestedColors[i].addEventListener("click", () => {
-            currentColor = suggestedColors[i].style.background;
-            colorPicker.value = rgbToHex(currentColor);
+            currentColor = rgbColors;
+            colorPicker.value = rgbToHex(rgbColors); // need to convert rgb output of this promise to hex
         });
       }
       console.log(palette);
@@ -441,11 +438,11 @@ const generatePalette = () => {
 
 refreshColorsPicker.addEventListener("click", () => generatePalette());
 
-// INITIALIZATION
 
 document.addEventListener("DOMContentLoaded", function () {
     // making sure this only happens once everything in the DOM is loaded
     generatePalette();
+    
 });
 
 // add blank canvas to pastArray

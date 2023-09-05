@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./index.css">
+    <script src="./index.js" defer></script>
+    <title>Document</title>
+</head>
+<body>
+    <p id="result"></p>
+    <!-- <h3 id="current-tool">pencil</h3> -->
+    <h1>Drawing App</h1>
+    <div id="big-flexbox">
+        <div id="tool-flexbox">
+            <div class="tool-square-flexbox" id="toolsize-square">
+                <input type="range" min="1" max="20" value="1">
+                <span>1</span>
+            </div>
+            <div class="tool-square-flexbox" id="pencil-square"><img src="images/pencil.png" alt="pencil icon"></div>
+            <div class="tool-square-flexbox" id="eraser-square"><img src="images/eraser.png" alt="eraser icon"></div>
+            <div class="tool-square-flexbox">
+                <form>
+                    <input id="color-picker" type="color">
+                </form>
+            </div>
+            <div class="tool-square-flexbox" id="rectangle-square"><img src="images/rectangle.png" alt="rectangle icon"></div>
+            <div class="tool-square-flexbox" id="ellipse-square"><img src="images/ellipse.png" alt="ellipse icon"></div>
+            <!-- <div class="tool-square-flexbox" id="bucket-square">bucket here *sob*</div> -->
+            <div class="tool-square-flexbox" id="eyedropper-square"><img src="images/eyedropper.png" alt="eyedropper icon"></div>
+        </div>
+        <div>
+            <canvas id="canvas"></canvas>
+            <div id="color-suggestions-grid">
+                <div class="suggested-color"></div>
+                <div class="suggested-color"></div>
+                <div class="suggested-color"></div>
+                <div class="suggested-color"></div>
+                <div class="suggested-color"></div>
+                <!-- <div class="suggested-color-rgb"></div>
+                <div class="suggested-color-rgb"></div>
+                <div class="suggested-color-rgb"></div>
+                <div class="suggested-color-rgb"></div>
+                <div class="suggested-color-rgb"></div> -->
+                <!-- <div id="test-magnifier"></div> -->
+            </div>
+        </div>
+        <div id="save-flexbox">
+            <div class="save-square-flexbox" id="reset-square"><img src="images/reset.png" alt="reset image"></div>
+            <div class="save-square-flexbox" id="undo-square"><img src="images/undo.png" alt="undo image"></div>
+            <div class="save-square-flexbox" id="redo-square"><img src="images/redo.png" alt="redo image"></div>
+            <div class="save-square-flexbox" id="export-square"><img src="images/export.png" alt="export image"></div>
+            <div class="save-square-flexbox" id="refresh-colors-square"><img src="images/update.png" alt="export image"></div>
+        </div>
+    </div>
+    
+    
+    
+</body>
+</html>
